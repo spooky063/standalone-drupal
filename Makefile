@@ -17,18 +17,19 @@ run:
 	-p 80:80 \
 	-e SIMPLETEST_DB=sqlite://localhost/sites/default/files/.test.sqlite \
 	-e SIMPLETEST_BASE_URL=http://localhost \
+	-e XDEBUG_MODE=coverage \
 	-v ./phpunit.xml.dist:/srv/app/phpunit.xml.dist:ro \
 	-v ./modules:/srv/app/web/modules/custom:ro \
-	standalone-drupal:latest \
+	standalone-drupal:latest
 	phpunit --testdox --testsuite unit,kernel --coverage-text
 
 .PHONY: ssh
 ssh:
-	docker exec -it $(shell docker container ls --all --filter "name=standalone-drupal" --quiet) sh
+	docker exec -it $(shell docker ps --filter "name=standalone-drupal" --format "{{.ID}}") /bin/sh
 
 .PHONY: github@pull
 github@pull:
-	docker pull ghcr.io/spooky063/standalone-drupal:main
+	docker pull ghcr.io/spooky063/standalone-drupal:v1.0.0
 
 .PHONY: github@run
 github@run:
@@ -37,7 +38,8 @@ github@run:
 	-p 80:80 \
 	-e SIMPLETEST_DB=sqlite://localhost/sites/default/files/.test.sqlite \
 	-e SIMPLETEST_BASE_URL=http://localhost \
+	-e XDEBUG_MODE=coverage \
 	-v ./phpunit.xml.dist:/srv/app/phpunit.xml.dist:ro \
 	-v ./modules:/srv/app/web/modules/custom:ro \
-	ghcr.io/spooky063/standalone-drupal:main \
+	ghcr.io/spooky063/standalone-drupal:v1.0.0 \
 	phpunit --testdox --testsuite unit,kernel --coverage-text

@@ -20,6 +20,14 @@ jobs:
       attestations: write
       id-token: write
 
+    strategy:
+      matrix:
+        build-config:
+          - PHP_VERSION: 8.4
+            DRUPAL_VERSION: 10.x-dev
+          - PHP_VERSION: 8.4
+            DRUPAL_VERSION: 11.x-dev
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +38,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set dynamic tag
+        run: |
+          VERSION_TAG=${GITHUB_REF_NAME#v}
+          IMAGE_TAG="${VERSION_TAG}-php${{ matrix.build-config.PHP_VERSION }}-drupal${{ matrix.build-config.DRUPAL_VERSION }}"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -43,10 +57,11 @@ jobs:
         with:
           context: .
           build-args: |
-            PHP_VERSION=8.4
-            DRUPAL_VERSION=11.x-dev
+            PHP_VERSION=${{ matrix.build-config.PHP_VERSION }}
+            DRUPAL_VERSION=${{ matrix.build-config.DRUPAL_VERSION }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation

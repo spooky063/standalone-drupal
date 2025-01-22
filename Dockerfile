@@ -34,9 +34,10 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 
 WORKDIR /app
 
-ARG DRUPAL_VERSION=11
+ARG DRUPAL_VERSION=11.x-dev
 RUN \
 	composer create-project "drupal-composer/drupal-project:${DRUPAL_VERSION}" . --no-interaction; \
+    composer require --dev brianium/paratest; \
 	composer clear-cache
 
 FROM common AS runner
@@ -51,8 +52,6 @@ RUN pecl install xdebug-${XDEBUG_VERSION} && docker-php-ext-enable xdebug
 RUN pecl clear-cache \
     && apk del --purge $PHPIZE_DEPS \
     && rm -rf /var/cache/apk/* /usr/share/doc /usr/share/man /tmp/*
-
-RUN echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/xdebug.ini
 
 WORKDIR /srv/app
 
