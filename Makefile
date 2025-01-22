@@ -28,8 +28,9 @@ ssh:
 	docker exec -it $(shell docker ps --filter "name=standalone-drupal" --format "{{.ID}}") /bin/sh
 
 .PHONY: github@pull
+# https://github.com/spooky063/standalone-drupal/pkgs/container/standalone-drupal/341309621?tag=1.0.0-php8.4-drupal11.x-dev
 github@pull:
-	docker pull ghcr.io/spooky063/standalone-drupal:v1.0.0
+	docker pull ghcr.io/spooky063/standalone-drupal:1.0.0-php8.4-drupal11.x-dev
 
 .PHONY: github@run
 github@run:
@@ -41,5 +42,5 @@ github@run:
 	-e XDEBUG_MODE=coverage \
 	-v ./phpunit.xml.dist:/srv/app/phpunit.xml.dist:ro \
 	-v ./modules:/srv/app/web/modules/custom:ro \
-	ghcr.io/spooky063/standalone-drupal:v1.0.0 \
+	standalone-drupal:1.0.0-php8.4-drupal11.x-dev \
 	phpunit --testdox --testsuite unit,kernel --coverage-text

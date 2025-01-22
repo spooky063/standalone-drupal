@@ -11,7 +11,7 @@ The goal is to have a docker image that can be used to run tests for separate mo
 This image contain the PHP 8.4 with XDebug 3.4.1 and the Drupal 11.x-dev version.
 
 ```bash
-docker pull ghcr.io/spooky063/standalone-drupal:v1.0.0
+docker pull ghcr.io/spooky063/standalone-drupal:1.0.0-php8.4-drupal11.x-dev
 ```
 
 ### Use this image to run tests
@@ -24,6 +24,8 @@ docker run -it --rm \
 -e SIMPLETEST_BASE_URL=http://localhost \
 -v ./phpunit.xml.dist:/srv/app/phpunit.xml.dist:ro \
 -v ./modules:/srv/app/web/modules/custom:ro \
-ghcr.io/spooky063/standalone-drupal:v1.0.0 \
+standalone-drupal:1.0.0-php8.4-drupal11.x-dev \
 phpunit --testdox --testsuite unit,kernel --coverage-text
 ```
+
+I also added [Paratest](https://github.com/paratestphp/paratest) in the `composer.json` file if you prefer.
